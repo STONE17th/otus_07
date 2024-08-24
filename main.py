@@ -39,14 +39,50 @@ def open_file():
         return global_phone_book
 
 
-def show_contacts():
-    if global_phone_book:
+def save_file():
+    data = []
+    for contact in global_phone_book.values():
+        data.append(';'.join(contact.values()))
+    data = '\n'.join(data)
+    with open('phone_book.txt', 'w', encoding='UTF-8') as file:
+        file.write(data)
+    print('Контакт успешно сохранен')
+
+
+def add_contact():
+    contact = {}
+    fields = {'name': 'Введите имя: ', 'phone': 'Введите телефон: ', 'comment': 'Введите комментарий: '}
+    for key, field in fields.items():
+        contact[key] = input(field)
+    global_phone_book[next_id(global_phone_book)] = contact
+
+
+def show_contacts(phone_book):
+    if phone_book:
         print('=' * 66)
-        for u_id, contact in global_phone_book.items():
+        for u_id, contact in phone_book.items():
             print(f'{u_id: >2}. {contact['name']: <20} {contact['phone']: <20} {contact['comment']: <20}')
         print('=' * 66)
     else:
         print('Телефонная книга пуста или не открыта')
+
+
+def find_contact():
+    result = {}
+    key_word = input('Введите слово для поиска: ')
+    for u_id, contact in global_phone_book.items():
+        for key, field in contact.items():
+            if key == 'phone':
+                res = []
+                for i in field:
+                    if i.isdigit():
+                        res.append(i)
+                field = ''.join(res)
+                # field = ''.join([i for i in field if i.isdigit()])
+            if key_word.lower() in field.lower():
+                result[u_id] = contact
+                break
+    show_contacts(result)
 
 
 def start():
@@ -61,17 +97,19 @@ def start():
             else:
                 print('Телефонная книга пуста')
         elif user_choice == '2':
-            pass
+            save_file()
         elif user_choice == '3':
-            show_contacts()
+            show_contacts(global_phone_book)
         elif user_choice == '4':
-            pass
+            add_contact()
         elif user_choice == '5':
-            pass
+            find_contact()
         elif user_choice == '6':
-            pass
+            find_contact()
+
         elif user_choice == '7':
-            pass
+            find_contact()
+            del_id = int(input('Какой ID Контакта вы хотите удалить? '))
         elif user_choice == '8':
             print('До свидания')
             break
